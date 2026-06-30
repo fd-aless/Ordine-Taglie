@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inventario Materiale Sportivo</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.40.0/iconfont/tabler-icons.min.css">
+<style>
+:root {
+  --bg: #faf9f6;
+  --surface-2: #ffffff;
+  --surface-1: #f4f2ec;
+  --text-primary: #1c1c1a;
+  --text-secondary: #5f5e5a;
+  --text-muted: #888780;
+  --text-accent: #185fa5;
+  --text-danger: #a32d2d;
+  --text-success: #0f6e56;
+  --border: #e6e3da;
+  --border-strong: #c8c4b7;
+  --bg-danger: #fceaea;
+  --bg-accent: #e6f1fb;
+  --bg-success: #e1f5ee;
+  --radius: 8px;
+  --purple: #4b0082;
+  --purple-light: #6a1b9a;
+  --purple-mid: #5c0099;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; padding: 24px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 14px; color: var(--text-primary); background: var(--bg);
+  line-height: 1.5;
+}
+.app { max-width: 1300px; margin: 0 auto; }
+
+/* HEADER */
+.app-header {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 16px; margin-bottom: 1.25rem; flex-wrap: wrap;
+  padding: 16px 24px;
+  background: linear-gradient(135deg, #2d004d 0%, #4b0082 50%, #6a1b9a 100%);
+  border-radius: 12px; color: #fff;
+  box-shadow: 0 2px 12px rgba(75,0,130,0.18);
+}
+.header-left { display: flex; align-items: center; gap: 18px; }
+.logo {
+  width: 72px; height: 72px; flex-shrink: 0;
+  background: #fff; border-radius: 50%; padding: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+.title-block h1 { margin: 0 0 3px 0; font-size: 21px; font-weight: 600; letter-spacing: 0.3px; }
+.subtitle { font-size: 12px; opacity: 0.82; }
+.header-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.header-actions button {
+  background: rgba(255,255,255,0.13); border: 0.5px solid rgba(255,255,255,0.3);
+  color: #fff; font-family: inherit; font-size: 13px;
+  padding: 7px 12px; border-radius: var(--radius);
+  cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  transition: background 0.15s;
+}
+.header-actions button:hover { background: rgba(255,255,255,0.24); }
+
+/* STATS */
+.stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 1rem; }
+.stat-card { background: var(--surface-2); border: 0.5px solid var(--border); border-radius: var(--radius); padding: 12px 16px; }
+.stat-card .lbl { font-size: 11px; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+.stat-card .val { font-size: 22px; font-weight: 500; color: var(--purple); }
+
+/* TOOLBAR */
+.toolbar {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 1rem; padding: 10px 14px;
+  background: var(--surface-2); border: 0.5px solid var(--border); border-radius: var(--radius);
+}
+.toolbar input[type=search] {
+  flex: 1; min-width: 180px; height: 34px; padding: 0 10px 0 32px;
+  border: 0.5px solid var(--border-strong); border-radius: var(--radius);
+  background: var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 9px center;
+  font-size: 13px; color: var(--text-primary);
+  font-family: inherit; outline: none;
+}
+.toolbar input[type=search]:focus { border-color: var(--purple); box-shadow: 0 0 0 2px rgba(75,0,130,0.12); }
+.filter-tabs { display: flex; gap: 4px; }
+.filter-tab {
+  padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  border: 0.5px solid var(--border-strong); background: var(--surface-1);
+  color: var(--text-secondary); cursor: pointer; transition: all 0.15s;
+}
+.filter-tab.active { background: var(--purple); border-color: var(--purple); color: #fff; }
+.filter-tab:hover:not(.active) { background: #e8e3f5; border-color: var(--purple); color: var(--purple); }
+.toolbar-right { display: flex; gap: 6px; margin-left: auto; }
+.btn {
+  font-family: inherit; font-size: 13px; padding: 7px 13px;
+  border: 0.5px solid var(--border-strong); background: var(--surface-2);
+  color: var(--text-primary); border-radius: var(--radius);
+  cursor: pointer; display: inline-flex; align-items: center; gap: 5px;
+  transition: background 0.15s, transform 0.05s;
+}
+.btn:hover { background: var(--surface-1); }
+.btn:active { transform: scale(0.98); }
+.btn i { font-size: 15px; }
+.btn-primary { background: var(--purple); color: #fff; border-color: var(--purple-light); }
+.btn-primary:hover { background: var(--purple-light); }
+.btn-danger { background: var(--bg-danger); color: var(--text-danger); border-color: #f5c6c6; }
+.btn-danger:hover { background: #f9d5d5; }
+
+/* TABLE */
+.table-wrap { border: 0.5px solid var(--border); border-radius: var(--radius); overflow: auto; background: var(--surface-2); }
+table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; }
+th, td { padding: 0; border-bottom: 0.5px solid var(--border); vertical-align: middle; }
+th:last-child, td:last-child { border-right: none; }
+thead th {
+  background: var(--purple); color: #fff; font-weight: 500; font-size: 11px;
+  padding: 10px 12px; text-align: left; letter-spacing: 0.3px; white-space: nowrap;
+  position: sticky; top: 0; z-index: 2;
+}
+thead th.center { text-align: center; }
+tbody tr:nth-child(even) td { background: #fafafa; }
+tbody tr:hover td { background: #f0ecdc; }
+td { padding: 8px 12px; }
+td.center { text-align: center; }
+.cat-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 500;
+}
+.cat-maglia  { background: #e6f1fb; color: #185fa5; }
+.cat-accessorio { background: #e1f5ee; color: #0f6e56; }
+.cat-strumento  { background: #f3eeff; color: #6a1b9a; }
+.qty-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 36px; padding: 2px 8px; border-radius: 6px;
+  font-size: 12px; font-weight: 600; background: var(--surface-1);
+}
+.qty-low { background: #fceaea; color: var(--text-danger); }
+.qty-ok  { background: var(--bg-success); color: var(--text-success); }
+.row-actions { display: flex; gap: 4px; justify-content: center; }
+.icon-btn {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--text-muted); padding: 4px; border-radius: 4px;
+  width: 28px; height: 28px; display: inline-flex; align-items: center; justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.icon-btn:hover.edit { background: var(--bg-accent); color: var(--text-accent); }
+.icon-btn:hover.del  { background: var(--bg-danger); color: var(--text-danger); }
+.icon-btn i { font-size: 15px; pointer-events: none; }
+.empty-state {
+  text-align: center; padding: 48px 24px;
+  color: var(--text-muted); font-size: 14px;
+}
+.empty-state i { font-size: 40px; display: block; margin-bottom: 8px; }
+
+/* STATUS */
+.status-bar { margin-top: 10px; font-size: 12px; color: var(--text-muted); min-height: 18px; display: flex; align-items: center; gap: 6px; }
+.status-bar.ok { color: var(--text-success); }
+.status-bar.err { color: var(--text-danger); }
+
+/* MODAL BACKDROP */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 100;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface-2); border-radius: 12px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  padding: 28px 32px; width: 100%; max-width: 520px;
+  max-height: 90vh; overflow-y: auto;
+  animation: pop .18s ease;
+}
+@keyframes pop { from { transform: scale(0.94); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.modal h2 { margin: 0 0 20px 0; font-size: 17px; color: var(--purple); display: flex; align-items: center; gap: 8px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.field label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 8px 10px; font-size: 13px;
+  border: 0.5px solid var(--border-strong); border-radius: var(--radius);
+  background: var(--bg); color: var(--text-primary); font-family: inherit;
+  outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border-color: var(--purple); box-shadow: 0 0 0 2px rgba(75,0,130,0.13);
+}
+.field textarea { resize: vertical; min-height: 64px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+
+/* CONFIRM DIALOG */
+.confirm-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 200;
+  align-items: center; justify-content: center;
+}
+.confirm-overlay.open { display: flex; }
+.confirm-box {
+  background: var(--surface-2); border-radius: 10px;
+  padding: 24px 28px; max-width: 360px; width: 90%;
+  box-shadow: 0 6px 30px rgba(0,0,0,0.2);
+  animation: pop .15s ease;
+}
+.confirm-box h3 { margin: 0 0 8px 0; color: var(--text-danger); display: flex; align-items: center; gap: 6px; }
+.confirm-box p { margin: 0 0 20px 0; font-size: 13px; color: var(--text-secondary); }
+.confirm-footer { display: flex; justify-content: flex-end; gap: 8px; }
+
+/* IMPORT hidden */
+#fileInput { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="logo">🏅</div>
+      <div class="title-block">
+        <h1>Inventario Materiale Sportivo</h1>
+        <div class="subtitle">Gestione maglie · accessori · strumenti</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button onclick="exportJSON()"><i class="ti ti-download"></i> Esporta JSON</button>
+      <button onclick="exportCSV()"><i class="ti ti-table-export"></i> Esporta CSV</button>
+      <button onclick="document.getElementById('fileInput').click()"><i class="ti ti-upload"></i> Importa JSON</button>
+    </div>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats-bar" id="statsBar"></div>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <input type="search" id="searchInput" placeholder="Cerca per nome, taglia, note…" oninput="render()">
+    <div class="filter-tabs">
+      <button class="filter-tab active" data-cat="tutti" onclick="setFilter(this)">Tutti</button>
+      <button class="filter-tab" data-cat="Maglia" onclick="setFilter(this)">Maglie</button>
+      <button class="filter-tab" data-cat="Accessorio" onclick="setFilter(this)">Accessori</button>
+      <button class="filter-tab" data-cat="Strumento" onclick="setFilter(this)">Strumenti</button>
+    </div>
+    <div class="toolbar-right">
+      <button class="btn btn-primary" onclick="openModal()">
+        <i class="ti ti-plus"></i> Aggiungi articolo
+      </button>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="table-wrap">
+    <table id="mainTable">
+      <thead>
+        <tr>
+          <th style="width:44px" class="center">#</th>
+          <th>Nome articolo</th>
+          <th>Categoria</th>
+          <th>Taglia / Misura</th>
+          <th class="center">Quantità</th>
+          <th>Prezzo (€)</th>
+          <th>Note</th>
+          <th class="center" style="width:90px">Azioni</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <div class="status-bar" id="statusBar"></div>
+
+</div><!-- /app -->
+
+<!-- MODAL AGGIUNGI / MODIFICA -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOnBg(event)">
+  <div class="modal">
+    <h2 id="modalTitle"><i class="ti ti-package"></i> Nuovo articolo</h2>
+    <div class="form-grid">
+      <div class="field full">
+        <label>Nome articolo *</label>
+        <input type="text" id="f_nome" placeholder="es. Maglia gara home, Pallone, Pettorina…">
+      </div>
+      <div class="field">
+        <label>Categoria *</label>
+        <select id="f_categoria">
+          <option value="">— Scegli —</option>
+          <option value="Maglia">Maglia</option>
+          <option value="Accessorio">Accessorio</option>
+          <option value="Strumento">Strumento</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Taglia / Misura</label>
+        <input type="text" id="f_taglia" placeholder="XS / S / M / L / XL / XXL …">
+      </div>
+      <div class="field">
+        <label>Quantità *</label>
+        <input type="number" id="f_quantita" min="0" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Prezzo unitario (€)</label>
+        <input type="number" id="f_prezzo" min="0" step="0.01" placeholder="0.00">
+      </div>
+      <div class="field full">
+        <label>Note</label>
+        <textarea id="f_note" placeholder="Colore, fornitore, stagione…"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" onclick="saveItem()"><i class="ti ti-check"></i> Salva</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <h3><i class="ti ti-alert-triangle"></i> Elimina articolo</h3>
+    <p id="confirmMsg">Vuoi eliminare questo articolo? L'azione non è reversibile.</p>
+    <div class="confirm-footer">
+      <button class="btn" onclick="closeConfirm()">Annulla</button>
+      <button class="btn btn-danger" id="confirmOkBtn"><i class="ti ti-trash"></i> Elimina</button>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept=".json" onchange="importJSON(event)">
+
+<script>
+// ─── STATE ──────────────────────────────────────────────────────────────────
+const STORAGE_KEY = 'inv_sportivo_v1';
+let state = {
+  items: [],
+  nextId: 1
+};
+let currentFilter = 'tutti';
+let editingId = null;
+let pendingDeleteId = null;
+
+// ─── LOAD / SAVE ─────────────────────────────────────────────────────────────
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.items)) state = parsed;
+    }
+  } catch(e) {}
+  if (!state.items.length) seedDemo();
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    showStatus('Salvato ✓', 'ok');
+  } catch(e) {
+    showStatus('Errore nel salvataggio', 'err');
+  }
+}
+
+function seedDemo() {
+  const demo = [
+    { nome:'Maglia gara home', categoria:'Maglia',      taglia:'M',   quantita:12, prezzo:45.00, note:'Stagione 2025/26' },
+    { nome:'Maglia gara home', categoria:'Maglia',      taglia:'L',   quantita:8,  prezzo:45.00, note:'Stagione 2025/26' },
+    { nome:'Maglia gara home', categoria:'Maglia',      taglia:'XL',  quantita:5,  prezzo:45.00, note:'Stagione 2025/26' },
+    { nome:'Maglia allenamento', categoria:'Maglia',    taglia:'M',   quantita:10, prezzo:28.00, note:'' },
+    { nome:'Maglia allenamento', categoria:'Maglia',    taglia:'L',   quantita:10, prezzo:28.00, note:'' },
+    { nome:'Pantaloncino gara',  categoria:'Maglia',    taglia:'M',   quantita:12, prezzo:22.00, note:'' },
+    { nome:'Calzettoni',         categoria:'Accessorio',taglia:'42-45',quantita:20, prezzo:8.50,  note:'Colore blu' },
+    { nome:'Pettorina',          categoria:'Accessorio',taglia:'',    quantita:15, prezzo:6.00,  note:'Set multicolore' },
+    { nome:'Parastinchi',        categoria:'Accessorio',taglia:'',    quantita:18, prezzo:7.00,  note:'' },
+    { nome:'Borsa portascarpe',  categoria:'Accessorio',taglia:'',    quantita:3,  prezzo:35.00, note:'' },
+    { nome:'Pallone da gioco',   categoria:'Strumento', taglia:'5',   quantita:8,  prezzo:60.00, note:'FIFA Quality' },
+    { nome:'Cinesini',           categoria:'Strumento', taglia:'',    quantita:40, prezzo:1.50,  note:'' },
+    { nome:'Paletti da allenamento', categoria:'Strumento',taglia:'', quantita:20, prezzo:3.00,  note:'' },
+    { nome:'Porta pieghevole',   categoria:'Strumento', taglia:'',    quantita:4,  prezzo:85.00, note:'' },
+  ];
+  demo.forEach(d => {
+    state.items.push({ id: state.nextId++, ...d });
+  });
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function getFiltered() {
+  const q = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  return state.items.filter(it => {
+    const matchCat = currentFilter === 'tutti' || it.categoria === currentFilter;
+    const matchQ   = !q || [it.nome, it.taglia, it.note, it.categoria].some(v => (v||'').toLowerCase().includes(q));
+    return matchCat && matchQ;
+  });
+}
+
+function render() {
+  renderStats();
+  renderTable();
+}
+
+function renderStats() {
+  const all = state.items;
+  const totalQty  = all.reduce((s, i) => s + (i.quantita||0), 0);
+  const totalVal  = all.reduce((s, i) => s + (i.quantita||0)*(i.prezzo||0), 0);
+  const maglie    = all.filter(i => i.categoria === 'Maglia').length;
+  const accessori = all.filter(i => i.categoria === 'Accessorio').length;
+  const strumenti = all.filter(i => i.categoria === 'Strumento').length;
+  document.getElementById('statsBar').innerHTML = `
+    <div class="stat-card"><div class="lbl">Articoli totali</div><div class="val">${all.length}</div></div>
+    <div class="stat-card"><div class="lbl">Pezzi in inventario</div><div class="val">${totalQty}</div></div>
+    <div class="stat-card"><div class="lbl">Valore stimato</div><div class="val">€ ${totalVal.toFixed(2)}</div></div>
+    <div class="stat-card"><div class="lbl">Maglie</div><div class="val">${maglie}</div></div>
+    <div class="stat-card"><div class="lbl">Accessori</div><div class="val">${accessori}</div></div>
+    <div class="stat-card"><div class="lbl">Strumenti</div><div class="val">${strumenti}</div></div>
+  `;
+}
+
+function catClass(cat) {
+  if (cat === 'Maglia')     return 'cat-maglia';
+  if (cat === 'Accessorio') return 'cat-accessorio';
+  if (cat === 'Strumento')  return 'cat-strumento';
+  return '';
+}
+function catIcon(cat) {
+  if (cat === 'Maglia')     return 'ti-shirt';
+  if (cat === 'Accessorio') return 'ti-tag';
+  if (cat === 'Strumento')  return 'ti-tool';
+  return 'ti-box';
+}
+
+function renderTable() {
+  const items = getFiltered();
+  const tbody = document.getElementById('tableBody');
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="8">
+      <div class="empty-state"><i class="ti ti-inbox"></i>Nessun articolo trovato</div>
+    </td></tr>`;
+    document.getElementById('statusBar').textContent = '';
+    return;
+  }
+  tbody.innerHTML = items.map((it, idx) => {
+    const qty = it.quantita || 0;
+    const qtyClass = qty === 0 ? 'qty-low' : qty < 3 ? 'qty-low' : 'qty-ok';
+    const prezzo = (it.prezzo != null && it.prezzo !== '') ? `€ ${parseFloat(it.prezzo).toFixed(2)}` : '—';
+    const taglia = it.taglia || '—';
+    const note   = escHtml(it.note || '');
+    return `<tr>
+      <td class="center" style="color:var(--text-muted);font-size:11px">${idx+1}</td>
+      <td style="font-weight:500">${escHtml(it.nome)}</td>
+      <td><span class="cat-badge ${catClass(it.categoria)}"><i class="ti ${catIcon(it.categoria)}"></i>${it.categoria}</span></td>
+      <td>${escHtml(taglia)}</td>
+      <td class="center"><span class="qty-badge ${qtyClass}">${qty}</span></td>
+      <td>${prezzo}</td>
+      <td style="color:var(--text-secondary);font-size:12px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${note||'—'}</td>
+      <td class="center">
+        <div class="row-actions">
+          <button class="icon-btn edit" title="Modifica" onclick="openModal(${it.id})"><i class="ti ti-edit"></i></button>
+          <button class="icon-btn del"  title="Elimina"  onclick="askDelete(${it.id})"><i class="ti ti-trash"></i></button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('statusBar').textContent = `${items.length} articolo${items.length!==1?'i':''} visualizzato${items.length!==1?'i':''}`;
+}
+
+function escHtml(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ─── FILTER ──────────────────────────────────────────────────────────────────
+function setFilter(btn) {
+  document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter = btn.dataset.cat;
+  render();
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(id) {
+  editingId = id || null;
+  const overlay = document.getElementById('modalOverlay');
+  document.getElementById('modalTitle').innerHTML = id
+    ? '<i class="ti ti-edit"></i> Modifica articolo'
+    : '<i class="ti ti-package"></i> Nuovo articolo';
+
+  if (id) {
+    const it = state.items.find(i => i.id === id);
+    if (it) {
+      document.getElementById('f_nome').value      = it.nome || '';
+      document.getElementById('f_categoria').value = it.categoria || '';
+      document.getElementById('f_taglia').value    = it.taglia || '';
+      document.getElementById('f_quantita').value  = it.quantita ?? '';
+      document.getElementById('f_prezzo').value    = it.prezzo ?? '';
+      document.getElementById('f_note').value      = it.note || '';
+    }
+  } else {
+    document.getElementById('f_nome').value      = '';
+    document.getElementById('f_categoria').value = '';
+    document.getElementById('f_taglia').value    = '';
+    document.getElementById('f_quantita').value  = '';
+    document.getElementById('f_prezzo').value    = '';
+    document.getElementById('f_note').value      = '';
+  }
+  overlay.classList.add('open');
+  setTimeout(() => document.getElementById('f_nome').focus(), 50);
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+function closeModalOnBg(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function saveItem() {
+  const nome      = document.getElementById('f_nome').value.trim();
+  const categoria = document.getElementById('f_categoria').value;
+  const taglia    = document.getElementById('f_taglia').value.trim();
+  const quantita  = parseInt(document.getElementById('f_quantita').value) || 0;
+  const prezzo    = parseFloat(document.getElementById('f_prezzo').value) || 0;
+  const note      = document.getElementById('f_note').value.trim();
+
+  if (!nome)      { highlight('f_nome');      return; }
+  if (!categoria) { highlight('f_categoria'); return; }
+
+  if (editingId) {
+    const it = state.items.find(i => i.id === editingId);
+    if (it) Object.assign(it, { nome, categoria, taglia, quantita, prezzo, note });
+  } else {
+    state.items.push({ id: state.nextId++, nome, categoria, taglia, quantita, prezzo, note });
+  }
+
+  saveState();
+  closeModal();
+  render();
+}
+
+function highlight(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--text-danger)';
+  el.style.boxShadow   = '0 0 0 2px rgba(163,45,45,0.2)';
+  el.focus();
+  setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 1500);
+}
+
+// ─── DELETE ──────────────────────────────────────────────────────────────────
+function askDelete(id) {
+  pendingDeleteId = id;
+  const it = state.items.find(i => i.id === id);
+  document.getElementById('confirmMsg').textContent =
+    `Vuoi eliminare "${it ? it.nome : 'questo articolo'}"? L'azione non è reversibile.`;
+  document.getElementById('confirmOkBtn').onclick = confirmDelete;
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+
+function confirmDelete() {
+  state.items = state.items.filter(i => i.id !== pendingDeleteId);
+  saveState();
+  closeConfirm();
+  render();
+}
+
+function closeConfirm() {
+  document.getElementById('confirmOverlay').classList.remove('open');
+  pendingDeleteId = null;
+}
+
+// ─── EXPORT ──────────────────────────────────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  downloadBlob(blob, 'inventario-sportivo.json');
+  showStatus('JSON esportato', 'ok');
+}
+
+function exportCSV() {
+  const rows = [['ID','Nome','Categoria','Taglia','Quantità','Prezzo €','Note']];
+  state.items.forEach(it => {
+    rows.push([it.id, it.nome, it.categoria, it.taglia||'', it.quantita, (it.prezzo||0).toFixed(2), it.note||'']);
+  });
+  const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿'+csv], { type: 'text/csv;charset=utf-8;' });
+  downloadBlob(blob, 'inventario-sportivo.csv');
+  showStatus('CSV esportato', 'ok');
+}
+
+function downloadBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ─── IMPORT ──────────────────────────────────────────────────────────────────
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      if (!Array.isArray(parsed.items)) throw new Error('Formato non valido');
+      state = parsed;
+      // ensure nextId is safe
+      const maxId = Math.max(0, ...state.items.map(i => i.id || 0));
+      state.nextId = maxId + 1;
+      saveState();
+      render();
+      showStatus(`Importati ${state.items.length} articoli`, 'ok');
+    } catch(err) {
+      showStatus('Errore: file JSON non valido', 'err');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ─── STATUS ──────────────────────────────────────────────────────────────────
+let _statusTimer = null;
+function showStatus(msg, type) {
+  const el = document.getElementById('statusBar');
+  el.textContent = msg;
+  el.className = 'status-bar ' + (type || '');
+  clearTimeout(_statusTimer);
+  _statusTimer = setTimeout(() => {
+    el.textContent = '';
+    el.className = 'status-bar';
+  }, 3000);
+}
+
+// ─── KEYBOARD ─────────────────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    if (document.getElementById('confirmOverlay').classList.contains('open')) closeConfirm();
+    else closeModal();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    if (document.getElementById('modalOverlay').classList.contains('open')) saveItem();
+  }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+loadState();
+render();
+</script>
+</body>
+</html>
